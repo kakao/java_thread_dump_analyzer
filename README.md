@@ -83,15 +83,28 @@ ex)
 java -jar -Dspring.profiles.active=production -Xms4096m -Xmx4096m ./java-thread-analyzer-0.0.1-SNAPSHOT.jar
 ```
 
+## How to Use
 
-## Screen Shots
+### Web Mode
+
+You can use this project with web interface.
+
+#### Screen Shots
 1. Main Page
 ![screen shot 2](images/screen_shot_2.png)
 
 2. View Page
 ![screen shot 1](images/screen_shot_1.png)
 
+### API Mode
 
+You make java thread dump with jstack and use curl command.
+```
+[root@server ~]# jstack -l 12345 > /tmp/$(hostname)_dump
+[root@server ~]# curl -F "dumpFile=@/tmp/$(hostname)_dump" -F "hostname=$(hostname)" http://infra.domain.com/api/v1/dump/java/upload
+http://infra.domain.com/dump/java/$(hostname)/1451972358000
+```
+And you open response url with web brower.
 
 ## License
 
