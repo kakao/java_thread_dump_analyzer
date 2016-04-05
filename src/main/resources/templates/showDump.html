@@ -1,0 +1,206 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<link href="static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" rel="stylesheet" />
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+	<script type='text/javascript'>
+	$(window).load(function() {
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		    var target = this.href.split('#');
+		    $('.nav a').filter('a[href="#'+target[1]+'"]').tab('show');
+		    if ( typeof target[2] != "undefined" ){
+		    	location.href="#"+target[2];
+		    }		    
+		})
+	});	
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <a class="navbar-brand" href="#">Java Thread Dump Analyzer</a>
+	    </div>
+	
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	    	<ul class="nav navbar-nav">
+	    		<li><a href="/dump/java">HOME</a></li>
+	    		<li><a href="/dump/java/upload">UPLOAD</a></li>    	
+	    	</ul>
+	      
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+	
+	<div class="container">	
+	
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table table-striped table-hover ">
+					<tbody>
+						<tr>
+							<td>Hostname</td>
+							<td th:text="${hostname}"></td>
+						</tr>
+						<tr>
+							<td>Date</td>
+							<td th:text="${date}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row">
+          <div class="col-lg-12">
+            <div class="page-header">
+              <h1>Thread Score Board</h1>
+            </div>
+          </div>
+        </div>
+		
+		<div class="row">
+			<div class="col-lg-3">
+				<div class="panel panel-success">
+                	<div class="panel-heading">
+                		<h3 class="panel-title">RUNNABLE</h3>
+                	</div>
+                	<div class="panel-body">
+                 		<h2><p class="text-success" th:text="${nr_runnable}"></p></h2>
+                	</div>
+              	</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="panel panel-primary">
+                	<div class="panel-heading">
+                		<h3 class="panel-title">WAITING</h3>
+                	</div>
+                	<div class="panel-body">
+                 		<h2><p class="text-primary" th:text="${nr_waiting}"></p></h2>
+                	</div>
+              	</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="panel panel-warning">
+                	<div class="panel-heading">
+                		<h3 class="panel-title">TIMED_WAITING</h3>
+                	</div>
+                	<div class="panel-body">
+                 		<h2><p class="text-warning" th:text="${nr_timed_waiting}"></p></h2>
+                	</div>
+              	</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="panel panel-danger">
+                	<div class="panel-heading">
+                		<h3 class="panel-title">BLOCKED</h3>
+                	</div>
+                	<div class="panel-body">
+                 		<h2><p class="text-danger" th:text="${nr_blocked}"></p></h2>
+                	</div>
+              	</div>
+			</div>
+		</div>
+		
+		<div class="row">
+          <div class="col-lg-12">
+            <div class="page-header">
+              <h1>Lock Information</h1>
+            </div>
+          </div>
+        </div>
+        
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table table-striped table-hover ">
+					<thead>
+						<tr>
+							<th>Lock ID</th>
+		     		 		<th>Lock Owned Thread ID(s)</th>
+		     		 		<th colspan="21">Lock Waiting Thread ID(s)</th>
+		     		 	</tr>
+		     		</thead>
+			 		<tbody>
+			 			<tr th:each="lock : ${locks}">
+			 				<td>
+			 					<p>
+			 						<p th:text="${lock.id}"></p>
+			 					</p>
+			 				</td>
+			 				<td>
+			 					<p th:each="lockThread : ${lock.lockedThreads}">			 						
+			 						<div th:switch="${lockThread.state}">
+			 							<a href="" th:href="'#'+${lockThread.state}+'#'+${lockThread.nid}" data-toggle="tab" th:text="${lockThread.nid}"></a>
+			 							<span th:case="RUNNABLE" class="label label-success">RUNNABLE</span>
+			 							<span th:case="WAITING" class="label label-primary">WAITING</span>
+			 							<span th:case="TIMED_WAITING" class="label label-warning">TIMED_WAITING</span>
+			 							<span th:case="BLOCKED" class="label label-danger">BLOCKED</span>			 							
+			 						</div>
+			 					</p>
+			 				</td>
+			 				<td>
+			 					<p th:each="waitThread : ${lock.waitingThreads}">			 						
+			 						<div th:switch="${waitThread.state}">
+			 							<a href="" th:href="'#'+${waitThread.state}+'#'+${waitThread.nid}" data-toggle="tab" th:text="${waitThread.nid}"></a>
+			 							<span th:case="RUNNABLE" class="label label-success">RUNNABLE</span>
+			 							<span th:case="WAITING" class="label label-primary">WAITING</span>
+			 							<span th:case="TIMED_WAITING" class="label label-warning">TIMED_WAITING</span>
+			 							<span th:case="BLOCKED" class="label label-danger">BLOCKED</span>
+			 						</div>
+			 					</p>
+			 				</td>
+			 			</tr>
+ 					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="row">
+          <div class="col-lg-12">
+            <div class="page-header">
+              <h1>Raw Data</h1>
+            </div>
+          </div>
+        </div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<ul class="nav nav-tabs">
+	                <li class="active"><a href="#RUNNABLE" data-toggle="tab">RUNNABLE</a></li>
+	                <li><a href="#WAITING" data-toggle="tab">WAITING</a></li>
+	                <li><a href="#TIMED_WAITING" data-toggle="tab">TIMED_WAITING</a></li>
+	                <li><a href="#BLOCKED" data-toggle="tab">BLOCKED</a></li>
+              	</ul>
+              <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active in" id="RUNNABLE">
+                	<div th:each="runnable : ${runnables}">
+                		<a id="" th:id="${runnable.nid}"><p th:text="${runnable.nid}"></p></a>
+                		<pre th:text="${runnable.raw_data}"></pre>
+                	</div>
+                </div>
+                <div class="tab-pane" id="WAITING">
+                	<div th:each="waiting : ${waitings}">
+                		<a id="" th:id="${waiting.nid}"><p th:text="${waiting.nid}"></p></a>
+                		<pre th:text="${waiting.raw_data}"></pre>
+                	</div>
+        		</div>
+                <div class="tab-pane" id="TIMED_WAITING">
+            		<div th:each="timed_waiting : ${timed_waitings}">
+                		<a id="" th:id="${timed_waiting.nid}"><p th:text="${timed_waiting.nid}"></p></a>
+                		<pre th:text="${timed_waiting.raw_data}"></pre>
+                	</div>
+                </div>
+                <div class="tab-pane" id="BLOCKED">
+                	<div th:each="blocked : ${blockeds}">
+                		<a id="" th:id="${blocked.nid}"><p th:text="${blocked.nid}"></p></a>
+                		<pre th:text="${blocked.raw_data}"></pre>
+                	</div>  
+           		</div>
+              </div>
+			</div>		
+		</div>
+	</div>
+</body>
+</html>
