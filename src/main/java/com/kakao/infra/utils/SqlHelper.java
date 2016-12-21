@@ -21,6 +21,11 @@ public class SqlHelper {
 	@Autowired
     JdbcTemplate jdbcTemplate;
 
+	public void pingDB(){
+		String sql = "SELECT 1";
+		jdbcTemplate.queryForRowSet(sql);
+	}
+	
 	public List<ThreadInfo> getThreadInfo(String hostname, String timeStamp, String state){
 		String sql = "SELECT name, tid, nid, state, raw_data FROM thread_info WHERE hostname = '" + hostname + "' AND timestamp = '" + timeStamp + "' AND state = '" + state + "'";
 		return jdbcTemplate.query(sql, new ThreadInfoMapper());	
